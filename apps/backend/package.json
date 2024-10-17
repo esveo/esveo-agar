@@ -1,0 +1,19 @@
+{
+  "name": "@esveo-agar/backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "tsc",
+    "dev": "node --experimental-strip-types --watch ./src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@esveo-agar/shared": "^1.0.0",
+    "@types/node": "^22.7.6",
+    "@types/ws": "^8.5.12",
+    "ws": "^8.18.0"
+  }
+}

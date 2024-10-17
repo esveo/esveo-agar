@@ -1,0 +1,23 @@
+{
+  "name": "@esveo-agar/esveo-agar",
+  "version": "0.0.1",
+  "description": "esveo Agar.io clone",
+  "type": "module",
+  "scripts": {
+    "test": "prettier --check apps/ libs/ && npm run test --workspaces && vitest run",
+    "watch-tests": "vitest start",
+    "format": "prettier --write apps/ libs/"
+  },
+  "author": "esveo",
+  "license": "MIT",
+  "workspaces": [
+    "apps/frontend",
+    "apps/backend",
+    "libs/shared"
+  ],
+  "dependencies": {
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.3"
+  }
+}

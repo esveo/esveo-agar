@@ -1,0 +1,19 @@
+{
+  "name": "@esveo-agar/frontend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "tsc",
+    "dev": "vite --port 3000 --host 0.0.0.0"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@esveo-agar/shared": "^1.0.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.9"
+  }
+}
