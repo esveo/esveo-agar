@@ -3,12 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./index.css" />
     <title>esveo Agar</title>
   </head>
-  <body>
+  <body style="margin: 0px">
+    <div class="ui-container">
+      <p class="startParagraph">Start Game</p>
+      <button id="spawn-button" class="spawn-button">Spawn</button>
+    </div>
     <canvas id="game" width="800" height="600"></canvas>
     <div id="ui"></div>
-
     <script type="module" src="./src/main.ts"></script>
   </body>
 </html>

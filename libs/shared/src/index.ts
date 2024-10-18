@@ -6,7 +6,7 @@ export type Vector = {
   y: number;
 };
 
-type PlayerId = number;
+export type PlayerId = number;
 
 export type Player = {
   id: PlayerId;
@@ -58,4 +58,12 @@ export type ServerGameStateUpdateEvent = {
   gameState: GameState;
 };
 
-export type ServerEvent = ServerGameStateUpdateEvent;
+export type ServerWelcomeEvent = {
+  type: "serverwelcome";
+  playerId: PlayerId;
+  mapSize: Vector;
+};
+
+export type ServerEvent = ServerGameStateUpdateEvent | ServerWelcomeEvent;
+
+export * as vector from "./vector.ts";
