@@ -4,6 +4,11 @@ import { doPlayersCollide, doesEatParticle } from "./utils";
 
 const BASE_SPEED = 1;
 const STARTING_RADIUS = 10;
+/**
+ * Particles spawned per tick. > 1 and integer value!
+ */
+const NEW_PARTICLES_PER_TICK = 1;
+const MAX_PARTICLE_COUNT = 500;
 
 /**
  * Players with bigger radii should move slower
@@ -18,11 +23,32 @@ function getSpeedMulitplierFromRadius(radius: number): number {
 export function calculateTick(
   oldGameState: GameState,
   clientInputStatesById: Record<number, ClientInputState>,
+  respawnPlayerIds: number[],
 ) : GameState {
   return produce(oldGameState, gameState => {
+    // Add missing players
+    for (const playerId of Object.keys(clientInputStatesById).map(Number)) {
+      if (!gameState.players[playerId]) {
+        gameState.players[playerId] = {
+          id: playerId,
+          position: generateRandomNonCollidingPosition(gameState, STARTING_RADIUS),
+          radius: STARTING_RADIUS,
+        }
+      }
+    }
+
+    // Respawn non-new players
+    for (const playerId of respawnPlayerIds) {
+      const player = gameState.players[playerId];
+      if (player) {
+        player.position = generateRandomNonCollidingPosition(gameState, player.radius);
+        player.radius = STARTING_RADIUS;
+      }
+    }
+
     const players = Object.values(gameState.players);
 
-    // Step 1: Move players
+    // Move players
     for (const player of players) {
       // dead players do not move
       if (player.radius===0) {
@@ -47,7 +73,7 @@ export function calculateTick(
       }
     }
 
-    // Step 2: Calculate player-player collisions
+    // Calculate player-player collisions
     const alivePlayers = players.filter(player => player.radius > 0);
     for (const player of alivePlayers) {
       for (const otherPlayer of alivePlayers) {
@@ -71,7 +97,7 @@ export function calculateTick(
       }
     }
 
-    // Step 3: Calculate player-particle collisions
+    // Calculate player-particle collisions
     gameState.particles = gameState.particles.filter(particle => {
       // check collision with players
       for (const player of alivePlayers) {
@@ -83,11 +109,12 @@ export function calculateTick(
       }
     })
 
-    // TODO: Remove disconnected players: idea: no input state if player is disconnected
-
-    // TODO: Place new players/respawned players
-
-    // TODO: Regrow particles
+    // Regrow particles
+    if (gameState.particles.length < MAX_PARTICLE_COUNT) {
+      for (let i = 0; i < NEW_PARTICLES_PER_TICK; i++) {
+        gameState.particles.push(generateRandomPosition());
+      }
+    }
 
     return gameState;
   })
@@ -113,5 +140,15 @@ function generateRandomNonCollidingPosition(gameState: GameState, radius: number
     if (!collidesWithPlayer) {
       return {x, y};
     }
+  }
+}
+
+/**
+ * Generate random coordinates within the game world
+ */
+function generateRandomPosition() : Vector {
+  return {
+    x: Math.random() * GAME_WOLRD_WIDTH,
+    y: Math.random() * GAME_WOLRD_HEIGHT,
   }
 }
