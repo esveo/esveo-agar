@@ -20,7 +20,6 @@ export async function startWebSocketClient(): Promise<WebsocketClient> {
     socket.addEventListener("error", (event) => {
       reject(new Error("Could not connect", { cause: event }));
     });
-    socket.addEventListener("message", console.log);
   });
 
   return {

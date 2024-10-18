@@ -1,4 +1,7 @@
-import { Vector } from "./index.ts";
+type Vector = {
+  x: number;
+  y: number;
+};
 
 export function normalize(v: Vector): Vector {
   const length = Math.sqrt(v.x ** 2 + v.y ** 2);

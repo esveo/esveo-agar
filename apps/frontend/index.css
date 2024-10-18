@@ -1,11 +1,9 @@
 .ui-container {
   position: fixed;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
   gap: 0.5rem;
-  inset: 0;
+  top: 0;
+  right: 0;
 }
 
 .startParagraph {

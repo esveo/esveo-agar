@@ -24,7 +24,7 @@ client.socket.addEventListener("message", (e) => {
       registerInputEvents(canvas, client, playerId);
       return;
     case "gamestateupdate":
-      if (!playerId) return;
+      if (playerId === undefined) return;
       lastGameState = event.gameState;
       renderer.render(event.gameState, playerId);
       return;
@@ -41,4 +41,5 @@ window.addEventListener("resize", () => {
 
 respawnButton.addEventListener("click", () => {
   client.emit({ playerId: playerId, type: "respawn" });
+  document.getElementById("ui-container")!.style.display = "none";
 });
