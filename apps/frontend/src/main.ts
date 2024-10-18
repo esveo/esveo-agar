@@ -1,8 +1,9 @@
+import { initCanvas } from "./canvas.ts";
 import { startWebSocketClient } from "./startWebSocketClient.ts";
 
-const socket = await startWebSocketClient();
+const client = await startWebSocketClient();
 
-socket.addEventListener("message", (event) => {
+client.socket.addEventListener("message", (event) => {
   console.log(event);
 });
 
@@ -11,7 +12,8 @@ let i = 0;
 button.textContent = "Send message";
 
 button.addEventListener("click", () => {
-  socket.send(`Message ${i++}`);
+  client.socket.send(`Message ${i++}`);
 });
 
 document.body.appendChild(button);
+const canvas = initCanvas(client);
