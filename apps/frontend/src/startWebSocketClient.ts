@@ -1,5 +1,5 @@
 export async function startWebSocketClient(): Promise<WebSocket> {
-  const socket = new WebSocket("ws://localhost:3001");
+  const socket = new WebSocket(location.origin.replace("http", "ws") + "/ws");
 
   await new Promise<void>((resolve, reject) => {
     socket.addEventListener(
