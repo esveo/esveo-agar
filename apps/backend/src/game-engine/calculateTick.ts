@@ -1,4 +1,10 @@
-import { ClientInputState, GAME_WOLRD_HEIGHT, GAME_WOLRD_WIDTH, GameState, Vector } from "@esveo-agar/shared";
+import {
+  ClientInputState,
+  GAME_WOLRD_HEIGHT,
+  GAME_WOLRD_WIDTH,
+  GameState,
+  Vector,
+} from "@esveo-agar/shared";
 import { produce } from "immer";
 import { doPlayersCollide, doesEatParticle } from "./utils";
 
@@ -12,28 +18,31 @@ const MAX_PARTICLE_COUNT = 500;
 
 /**
  * Players with bigger radii should move slower
- * 
+ *
  * First iteration: a player with 10 times the radius should move half as fast
  */
 function getSpeedMulitplierFromRadius(radius: number): number {
   // function that returns 1 for radius 1, 0.5 for radius 10, 0.25 for radius 100
-  return Math.pow(2, -Math.log10(radius))
+  return Math.pow(2, -Math.log10(radius));
 }
 
 export function calculateTick(
   oldGameState: GameState,
   clientInputStatesById: Record<number, ClientInputState>,
   respawnPlayerIds: number[],
-) : GameState {
-  return produce(oldGameState, gameState => {
+): GameState {
+  return produce(oldGameState, (gameState) => {
     // Add missing players
     for (const playerId of Object.keys(clientInputStatesById).map(Number)) {
       if (!gameState.players[playerId]) {
         gameState.players[playerId] = {
           id: playerId,
-          position: generateRandomNonCollidingPosition(gameState, STARTING_RADIUS),
+          position: generateRandomNonCollidingPosition(
+            gameState,
+            STARTING_RADIUS,
+          ),
           radius: STARTING_RADIUS,
-        }
+        };
       }
     }
 
@@ -41,7 +50,10 @@ export function calculateTick(
     for (const playerId of respawnPlayerIds) {
       const player = gameState.players[playerId];
       if (player) {
-        player.position = generateRandomNonCollidingPosition(gameState, player.radius);
+        player.position = generateRandomNonCollidingPosition(
+          gameState,
+          player.radius,
+        );
         player.radius = STARTING_RADIUS;
       }
     }
@@ -51,14 +63,15 @@ export function calculateTick(
     // Move players
     for (const player of players) {
       // dead players do not move
-      if (player.radius===0) {
+      if (player.radius === 0) {
         continue;
       }
 
       const clientInputState = clientInputStatesById[player.id];
 
       if (clientInputState) {
-        const speedMultiplier = getSpeedMulitplierFromRadius(player.radius) * BASE_SPEED;
+        const speedMultiplier =
+          getSpeedMulitplierFromRadius(player.radius) * BASE_SPEED;
 
         player.position.x += clientInputState.direction.x * speedMultiplier;
         player.position.y += clientInputState.direction.y * speedMultiplier;
@@ -67,14 +80,20 @@ export function calculateTick(
         if (player.position.x - player.radius < 0) {
           player.position.x = player.radius;
         }
-        if (player.position.x +player.radius > GAME_WOLRD_WIDTH) {
+        if (player.position.x + player.radius > GAME_WOLRD_WIDTH) {
           player.position.x = GAME_WOLRD_WIDTH - player.radius;
+        }
+        if (player.position.y - player.radius < 0) {
+          player.position.y = player.radius;
+        }
+        if (player.position.y + player.radius > GAME_WOLRD_HEIGHT) {
+          player.position.y = GAME_WOLRD_HEIGHT - player.radius;
         }
       }
     }
 
     // Calculate player-player collisions
-    const alivePlayers = players.filter(player => player.radius > 0);
+    const alivePlayers = players.filter((player) => player.radius > 0);
     for (const player of alivePlayers) {
       for (const otherPlayer of alivePlayers) {
         if (player.id === otherPlayer.id) {
@@ -84,7 +103,10 @@ export function calculateTick(
         if (doPlayersCollide(player, otherPlayer)) {
           const sameRadius = player.radius === otherPlayer.radius;
           const randomValue = Math.random();
-          if (player.radius < otherPlayer.radius || (sameRadius && randomValue > 0.5)) {
+          if (
+            player.radius < otherPlayer.radius ||
+            (sameRadius && randomValue > 0.5)
+          ) {
             // Player dies
             otherPlayer.radius += player.radius;
             player.radius = 0;
@@ -98,16 +120,16 @@ export function calculateTick(
     }
 
     // Calculate player-particle collisions
-    gameState.particles = gameState.particles.filter(particle => {
+    gameState.particles = gameState.particles.filter((particle) => {
       // check collision with players
       for (const player of alivePlayers) {
         if (doesEatParticle(player, particle)) {
           player.radius++;
-          return false
+          return false;
         }
         return true;
       }
-    })
+    });
 
     // Regrow particles
     if (gameState.particles.length < MAX_PARTICLE_COUNT) {
@@ -117,14 +139,19 @@ export function calculateTick(
     }
 
     return gameState;
-  })
+  });
 }
 
 /**
  * Generate coordinates for a new player that do not collide with existing players (with a given radius)
  */
-function generateRandomNonCollidingPosition(gameState: GameState, radius: number) : Vector {
-  const players = Object.values(gameState.players).filter(player => player.radius > 0);
+function generateRandomNonCollidingPosition(
+  gameState: GameState,
+  radius: number,
+): Vector {
+  const players = Object.values(gameState.players).filter(
+    (player) => player.radius > 0,
+  );
 
   while (true) {
     let x = Math.random() * GAME_WOLRD_WIDTH;
@@ -135,10 +162,12 @@ function generateRandomNonCollidingPosition(gameState: GameState, radius: number
     if (y + radius > GAME_WOLRD_HEIGHT) y = GAME_WOLRD_HEIGHT - radius;
     if (y - radius < 0) y = radius;
 
-    const collidesWithPlayer = players.some(player => doPlayersCollide(player, {id: 0, position: {x, y}, radius}));
+    const collidesWithPlayer = players.some((player) =>
+      doPlayersCollide(player, { id: 0, position: { x, y }, radius }),
+    );
 
     if (!collidesWithPlayer) {
-      return {x, y};
+      return { x, y };
     }
   }
 }
@@ -146,9 +175,9 @@ function generateRandomNonCollidingPosition(gameState: GameState, radius: number
 /**
  * Generate random coordinates within the game world
  */
-function generateRandomPosition() : Vector {
+function generateRandomPosition(): Vector {
   return {
     x: Math.random() * GAME_WOLRD_WIDTH,
     y: Math.random() * GAME_WOLRD_HEIGHT,
-  }
+  };
 }
