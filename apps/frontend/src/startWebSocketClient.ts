@@ -1,4 +1,11 @@
-export async function startWebSocketClient(): Promise<WebSocket> {
+import { ClientEvent } from "@esveo-agar/shared";
+
+export type WebsocketClient = {
+  socket: WebSocket;
+  emit: (event: ClientEvent) => void;
+};
+
+export async function startWebSocketClient(): Promise<WebsocketClient> {
   const socket = new WebSocket("ws://localhost:3001");
 
   await new Promise<void>((resolve, reject) => {
@@ -15,5 +22,10 @@ export async function startWebSocketClient(): Promise<WebSocket> {
     });
   });
 
-  return socket;
+  return {
+    socket,
+    emit: (event: ClientEvent) => {
+      socket.send(JSON.stringify(event));
+    },
+  };
 }
