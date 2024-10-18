@@ -1,4 +1,4 @@
-import { GameState } from "@esveo-agar/shared";
+import { GameState, vector } from "@esveo-agar/shared";
 import { setViewportToWindowDimension } from "./canvas.ts";
 import { Renderer } from "./renderer.ts";
 import { startWebSocketClient } from "./startWebSocketClient.ts";
@@ -52,3 +52,20 @@ window.addEventListener("resize", () => {
   setViewportToWindowDimension();
   renderer.render(dummyState);
 });
+
+function sendInput(event: PointerEvent) {
+  const { clientX, clientY } = event;
+  const direction = {
+    x: clientX - window.innerWidth / 2,
+    y: clientY - window.innerHeight / 2,
+  };
+  client.emit({
+    type: "input",
+    direction: vector.normalize(direction),
+    playerId: 1,
+  });
+}
+
+canvas.addEventListener("pointerenter", sendInput);
+canvas.addEventListener("pointerleave", sendInput);
+canvas.addEventListener("pointermove", sendInput);

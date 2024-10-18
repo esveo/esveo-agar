@@ -51,3 +51,5 @@ export type ServerGameStateUpdateEvent = {
 };
 
 export type ServerEvent = ServerGameStateUpdateEvent;
+
+export * as vector from "./vector.ts";
