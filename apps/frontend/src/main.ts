@@ -1,4 +1,4 @@
-import { initCanvas } from "./canvas.ts";
+import { setViewportToWindowDimension } from "./canvas.ts";
 import { startWebSocketClient } from "./startWebSocketClient.ts";
 
 const client = await startWebSocketClient();
@@ -16,4 +16,7 @@ button.addEventListener("click", () => {
 });
 
 document.body.appendChild(button);
-const canvas = initCanvas(client);
+const canvas = setViewportToWindowDimension();
+window.addEventListener("resize", () => {
+  setViewportToWindowDimension();
+});
