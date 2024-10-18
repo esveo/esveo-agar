@@ -1,6 +1,4 @@
-import { WebsocketClient } from "./startWebSocketClient.ts";
-
-export function createCanvas(client: WebsocketClient) {
+export function createCanvas() {
   const canvas = document.getElementById("game") as HTMLCanvasElement;
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;

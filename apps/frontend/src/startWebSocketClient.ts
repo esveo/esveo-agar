@@ -6,7 +6,7 @@ export type WebsocketClient = {
 };
 
 export async function startWebSocketClient(): Promise<WebsocketClient> {
-  const socket = new WebSocket("ws://localhost:3002");
+  const socket = new WebSocket("ws://localhost:3001");
 
   await new Promise<void>((resolve, reject) => {
     socket.addEventListener(
@@ -20,6 +20,7 @@ export async function startWebSocketClient(): Promise<WebsocketClient> {
     socket.addEventListener("error", (event) => {
       reject(new Error("Could not connect", { cause: event }));
     });
+    socket.addEventListener("message", console.log);
   });
 
   return {
