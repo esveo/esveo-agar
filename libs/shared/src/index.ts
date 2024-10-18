@@ -46,6 +46,11 @@ export type ClientRespawnEvent = {
   type: "respawn";
 };
 
+export type ServerWelcomeEvent = {
+  playerId: PlayerId;
+  mapSize: Vector;
+};
+
 export type ClientEvent = ClientInputEvent | ClientRespawnEvent;
 
 export type ServerGameStateUpdateEvent = {

@@ -11,6 +11,8 @@ const button = document.createElement("button");
 let i = 0;
 button.textContent = "Send message";
 
+let userId = 0;
+
 button.addEventListener("click", () => {
   client.socket.send(`Message ${i++}`);
 });
