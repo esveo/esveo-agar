@@ -1,7 +1,7 @@
 import {
-  type ClientInputState,
   GAME_WOLRD_HEIGHT,
   GAME_WOLRD_WIDTH,
+  type ClientInputState,
   type GameState,
   type Particle,
   type Player,
@@ -9,7 +9,7 @@ import {
 } from "@esveo-agar/shared";
 import { produce } from "immer";
 
-const BASE_SPEED = 5;
+const BASE_SPEED = 10;
 const STARTING_RADIUS = 10;
 /**
  * Particles spawned per tick. > 1 and integer value!
