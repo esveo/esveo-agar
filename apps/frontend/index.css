@@ -1,0 +1,28 @@
+.ui-container {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.5rem;
+  inset: 0;
+}
+
+.startParagraph {
+  font-size: 1.5rem;
+}
+
+.spawn-button {
+  background: blue;
+  color: white;
+  font-size: 1rem;
+  padding: 1rem 3rem;
+  border: 1px;
+  border-radius: 5px;
+}
+
+:hover.spawn-button {
+  background: green;
+  font-size: 1.2rem;
+  padding: 1.5rem 3.5rem;
+}

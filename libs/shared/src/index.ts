@@ -3,7 +3,7 @@ export type Vector = {
   y: number;
 };
 
-type PlayerId = number;
+export type PlayerId = number;
 
 export type Player = {
   id: PlayerId;

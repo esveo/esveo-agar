@@ -1,6 +1,7 @@
 import { GameState, vector } from "@esveo-agar/shared";
-import { setViewportToWindowDimension } from "./canvas.ts";
+import { initCanvas, setViewportToWindowDimension } from "./canvas.ts";
 import { Renderer } from "./renderer.ts";
+import { respawnElement } from "./respawn.ts";
 import { startWebSocketClient } from "./startWebSocketClient.ts";
 
 const client = await startWebSocketClient();
@@ -71,3 +72,8 @@ function createSendInputHandler(player: number) {
 canvas.addEventListener("pointerenter", createSendInputHandler(1));
 canvas.addEventListener("pointerleave", createSendInputHandler(1));
 canvas.addEventListener("pointermove", createSendInputHandler(1));
+const canvas = initCanvas(client);
+
+//TODO  replace it
+const playerId = 1;
+const respawn = respawnElement(client, playerId);
