@@ -6,7 +6,7 @@ export type WebsocketClient = {
 };
 
 export async function startWebSocketClient(): Promise<WebsocketClient> {
-  const socket = new WebSocket("ws://localhost:3001");
+  const socket = new WebSocket("ws://" + location.host);
 
   await new Promise<void>((resolve, reject) => {
     socket.addEventListener(

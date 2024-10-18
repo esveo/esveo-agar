@@ -3,13 +3,44 @@ import type {
   ClientInputState,
   GameState,
 } from "@esveo-agar/shared";
+import http from "http";
 import { WebSocket, WebSocketServer } from "ws";
 import { calculateTick } from "./game-engine/calculateTick.ts";
 
 const MAX_FRAME_TIME_MS = 1000 / 60;
 
 export async function startWebSocketServer() {
-  const wss = new WebSocketServer({ port: 3001 });
+  const wss = new WebSocketServer({ noServer: true });
+  const httpServer = http.createServer((req, res) => {
+    const isWebSocketRequest = req.headers.upgrade === "websocket";
+    if (isWebSocketRequest) {
+      wss.handleUpgrade(req, req.socket, Buffer.alloc(0), (ws) => {
+        wss.emit("connection", ws, req);
+      });
+      return;
+    } else {
+      const proxyOptions = {
+        hostname: "localhost",
+        port: 3000,
+        path: req.url,
+        method: req.method,
+        headers: req.headers,
+      };
+      const proxy = http.request(proxyOptions, (proxyRes) => {
+        console.log(req.url, proxyRes.statusCode);
+        res.writeHead(proxyRes.statusCode ?? 200, proxyRes.headers);
+        proxyRes.pipe(res, {
+          end: true,
+        });
+      });
+
+      req.pipe(proxy, {
+        end: true,
+      });
+    }
+  });
+
+  httpServer.listen(3001);
 
   const wsMap = new Map<number, WebSocket>();
   let gameState: GameState = { players: {}, particles: [] };
