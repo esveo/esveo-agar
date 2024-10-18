@@ -34,7 +34,7 @@ export async function startWebSocketServer() {
 
     ws.on("message", (data) => {
       const payload = JSON.parse(data.toString()) as ClientEvent;
-      console.log("Received message", payload);
+
       switch (payload.type) {
         case "input":
           clientInputStatesById[playerId] ??= { direction: { x: 0, y: 0 } };

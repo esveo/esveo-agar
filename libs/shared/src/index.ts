@@ -1,5 +1,5 @@
-export const GAME_WOLRD_WIDTH = 1000;
-export const GAME_WOLRD_HEIGHT = 1000;
+export const GAME_WOLRD_WIDTH = 10000;
+export const GAME_WOLRD_HEIGHT = 10000;
 
 export type Vector = {
   x: number;

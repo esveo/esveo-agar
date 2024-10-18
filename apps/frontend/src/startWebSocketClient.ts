@@ -6,7 +6,9 @@ export type WebsocketClient = {
 };
 
 export async function startWebSocketClient(): Promise<WebsocketClient> {
-  const socket = new WebSocket("ws://localhost:3001");
+  const socket = new WebSocket(
+    "ws://94cc-2003-c9-3f06-ad01-2551-81d2-7e33-3656.ngrok-free.app",
+  );
 
   await new Promise<void>((resolve, reject) => {
     socket.addEventListener(

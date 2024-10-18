@@ -125,10 +125,9 @@ export function calculateTick(
       // check collision with players
       for (const player of alivePlayers) {
         if (doesEatParticle(player, particle)) {
-          player.radius++;
+          player.radius += 10 / player.radius;
           return false;
         }
-        return true;
       }
       return true;
     });
