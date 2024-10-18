@@ -1,4 +1,4 @@
-import { ClientInputState, GAME_WOLRD_WIDTH, GameState } from "@esveo-agar/shared";
+import { ClientInputState, GAME_WOLRD_HEIGHT, GAME_WOLRD_WIDTH, GameState, Vector } from "@esveo-agar/shared";
 import { produce } from "immer";
 import { doPlayersCollide, doesEatParticle } from "./utils";
 
@@ -93,3 +93,25 @@ export function calculateTick(
   })
 }
 
+/**
+ * Generate coordinates for a new player that do not collide with existing players (with a given radius)
+ */
+function generateRandomNonCollidingPosition(gameState: GameState, radius: number) : Vector {
+  const players = Object.values(gameState.players).filter(player => player.radius > 0);
+
+  while (true) {
+    let x = Math.random() * GAME_WOLRD_WIDTH;
+    if (x + radius > GAME_WOLRD_WIDTH) x = GAME_WOLRD_WIDTH - radius;
+    if (x - radius < 0) x = radius;
+
+    let y = Math.random() * GAME_WOLRD_WIDTH;
+    if (y + radius > GAME_WOLRD_HEIGHT) y = GAME_WOLRD_HEIGHT - radius;
+    if (y - radius < 0) y = radius;
+
+    const collidesWithPlayer = players.some(player => doPlayersCollide(player, {id: 0, position: {x, y}, radius}));
+
+    if (!collidesWithPlayer) {
+      return {x, y};
+    }
+  }
+}
