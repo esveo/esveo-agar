@@ -53,19 +53,21 @@ window.addEventListener("resize", () => {
   renderer.render(dummyState);
 });
 
-function sendInput(event: PointerEvent) {
-  const { clientX, clientY } = event;
-  const direction = {
-    x: clientX - window.innerWidth / 2,
-    y: clientY - window.innerHeight / 2,
+function createSendInputHandler(player: number) {
+  return function sendInput(event: PointerEvent) {
+    const { clientX, clientY } = event;
+    const direction = {
+      x: clientX - window.innerWidth / 2,
+      y: clientY - window.innerHeight / 2,
+    };
+    client.emit({
+      type: "input",
+      direction: vector.normalize(direction),
+      playerId: player,
+    });
   };
-  client.emit({
-    type: "input",
-    direction: vector.normalize(direction),
-    playerId: 1,
-  });
 }
 
-canvas.addEventListener("pointerenter", sendInput);
-canvas.addEventListener("pointerleave", sendInput);
-canvas.addEventListener("pointermove", sendInput);
+canvas.addEventListener("pointerenter", createSendInputHandler(1));
+canvas.addEventListener("pointerleave", createSendInputHandler(1));
+canvas.addEventListener("pointermove", createSendInputHandler(1));
