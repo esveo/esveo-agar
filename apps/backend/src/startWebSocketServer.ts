@@ -1,10 +1,17 @@
 import { WebSocket, WebSocketServer } from "ws";
+import { handleClientEvent } from "./handleClientEvent.ts";
 
 export function startWebSocketServer() {
   const wss = new WebSocketServer({ port: 3001 });
 
+  const wsMap = new Map<number, WebSocket>();
+
+  let totalInitiatedConnections = 0;
   wss.on("connection", (ws) => {
     console.log("New connection!");
+    const userId = totalInitiatedConnections;
+    wsMap.set(userId, ws);
+    totalInitiatedConnections++;
 
     ws.on("error", console.error);
 
@@ -17,10 +24,7 @@ export function startWebSocketServer() {
     });
 
     ws.on("message", (data) => {
-      console.log("received, broadcasting it to all others:", data.toString());
-      for (const client of wss.clients) {
-        client.send(data.toString());
-      }
+      handleClientEvent(userId, data);
     });
 
     ws.send("Welcome to the server!");
@@ -39,4 +43,6 @@ export function startWebSocketServer() {
       potentiallyDeadSockets.add(client);
     }
   }, 5000);
+
+  return { wss, wsMap };
 }
