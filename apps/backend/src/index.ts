@@ -9,4 +9,5 @@ export function broadcast(playerId: number | null, message: string) {
     }
     return;
   }
+  GameServer.wsMap.get(playerId)?.send(message);
 }
