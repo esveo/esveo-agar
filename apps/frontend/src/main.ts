@@ -1,79 +1,44 @@
-import { GameState, vector } from "@esveo-agar/shared";
-import { initCanvas, setViewportToWindowDimension } from "./canvas.ts";
-import { Renderer } from "./renderer.ts";
-import { respawnElement } from "./respawn.ts";
+import { GameState, ServerEvent } from "@esveo-agar/shared";
+import { createCanvas } from "./canvas.ts";
+import { registerInputEvents } from "./input.ts";
+import { createRenderer } from "./renderer.ts";
+import { getRespawnElement } from "./respawn.ts";
 import { startWebSocketClient } from "./startWebSocketClient.ts";
 
 const client = await startWebSocketClient();
+const canvas = createCanvas(client);
+const renderer = createRenderer(canvas);
+const respawnButton = getRespawnElement();
 
-client.socket.addEventListener("message", (event) => {
-  console.log(event);
+let playing = false;
+let playerId: number;
+let lastGameState: GameState;
+
+client.socket.addEventListener("message", (e) => {
+  const event = JSON.parse(e.data) as ServerEvent;
+
+  switch (event.type) {
+    case "serverwelcome":
+      playerId = event.playerId;
+      playing = true;
+      registerInputEvents(canvas, client, playerId);
+      return;
+    case "gamestateupdate":
+      if (!playerId) return;
+      lastGameState = event.gameState;
+      renderer.render(event.gameState, playerId);
+      return;
+  }
 });
-
-const button = document.createElement("button");
-let i = 0;
-button.textContent = "Send message";
-
-button.addEventListener("click", () => {
-  client.socket.send(`Message ${i++}`);
-});
-
-document.body.appendChild(button);
-const canvas = setViewportToWindowDimension();
-const renderer = new Renderer(canvas, 1);
-const dummyState: GameState = {
-  players: {
-    1: {
-      id: 1,
-      position: { x: 300, y: 300 },
-      radius: 10,
-    },
-    2: {
-      id: 2,
-      position: { x: 200, y: 200 },
-      radius: 20,
-    },
-  },
-  particles: new Array(100).fill(0).map((_, i) => ({
-    x: Math.random() * 800,
-    y: Math.random() * 800,
-  })),
-};
-
-const center = { x: 200, y: 200 };
-canvas.addEventListener("click", (event) => {
-  center.x = event.clientX;
-  center.y = event.clientY;
-  renderer.render(dummyState);
-});
-
-renderer.render(dummyState);
 
 window.addEventListener("resize", () => {
-  setViewportToWindowDimension();
-  renderer.render(dummyState);
+  if (!playing) return;
+  if (!lastGameState) return;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  renderer.render(lastGameState, playerId);
 });
 
-function createSendInputHandler(player: number) {
-  return function sendInput(event: PointerEvent) {
-    const { clientX, clientY } = event;
-    const direction = {
-      x: clientX - window.innerWidth / 2,
-      y: clientY - window.innerHeight / 2,
-    };
-    client.emit({
-      type: "input",
-      direction: vector.normalize(direction),
-      playerId: player,
-    });
-  };
-}
-
-canvas.addEventListener("pointerenter", createSendInputHandler(1));
-canvas.addEventListener("pointerleave", createSendInputHandler(1));
-canvas.addEventListener("pointermove", createSendInputHandler(1));
-const canvas = initCanvas(client);
-
-//TODO  replace it
-const playerId = 1;
-const respawn = respawnElement(client, playerId);
+respawnButton.addEventListener("click", () => {
+  client.emit({ playerId: playerId, type: "respawn" });
+});

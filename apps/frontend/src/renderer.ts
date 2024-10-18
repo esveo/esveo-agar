@@ -1,18 +1,19 @@
 import { GameState } from "@esveo-agar/shared";
 
+export function createRenderer(canvas: HTMLCanvasElement) {
+  return new Renderer(canvas);
+}
+
 export class Renderer {
   private ctx: CanvasRenderingContext2D;
 
-  constructor(
-    canvas: HTMLCanvasElement,
-    private playerId: number,
-  ) {
+  constructor(canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext("2d")!;
   }
 
-  public render(state: GameState) {
+  public render(state: GameState, playerId: number) {
     requestAnimationFrame(() => {
-      const player = state.players[this.playerId];
+      const player = state.players[playerId];
       if (!player) throw Error("noooo");
       this.clear();
       this.ctx.translate(
