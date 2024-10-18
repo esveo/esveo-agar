@@ -6,7 +6,7 @@ import { getRespawnElement } from "./respawn.ts";
 import { startWebSocketClient } from "./startWebSocketClient.ts";
 
 const client = await startWebSocketClient();
-const canvas = createCanvas(client);
+const canvas = createCanvas();
 const renderer = createRenderer(canvas);
 const respawnButton = getRespawnElement();
 
