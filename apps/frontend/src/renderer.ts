@@ -3,15 +3,25 @@ import { GameState } from "@esveo-agar/shared";
 export class Renderer {
   private ctx: CanvasRenderingContext2D;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    private playerId: number,
+  ) {
     this.ctx = canvas.getContext("2d")!;
   }
 
-  public render(state: GameState, playerId: number) {
+  public render(state: GameState) {
     requestAnimationFrame(() => {
+      const player = state.players[this.playerId];
+      if (!player) throw Error("noooo");
       this.clear();
+      this.ctx.translate(
+        this.ctx.canvas.width / 2 - player.position.x,
+        this.ctx.canvas.height / 2 - player.position.y,
+      );
       this.drawPlayers(state);
       this.drawParticles(state);
+      this.ctx.resetTransform();
     });
   }
 
