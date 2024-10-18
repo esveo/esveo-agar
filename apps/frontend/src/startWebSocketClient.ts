@@ -7,7 +7,7 @@ export type WebsocketClient = {
 
 export async function startWebSocketClient(): Promise<WebsocketClient> {
   const socket = new WebSocket(
-    location.protocol === "https:" ? "wss://" : "ws://" + location.host,
+    (location.protocol === "https:" ? "wss://" : "ws://") + location.host,
   );
 
   await new Promise<void>((resolve, reject) => {
